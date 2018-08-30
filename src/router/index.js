@@ -24,6 +24,27 @@ import Layout from '../views/layout/Layout'
 export const constantRouterMap = [
   { path: '/login', component: () => import('@/views/login/index'), hidden: true },
   { path: '/404', component: () => import('@/views/404'), hidden: true },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/tags',
+    name: 'Tags',
+    meta: { title: '运维与管理', icon: 'example' },
+    children: [
+      {
+        path: 'tags',
+        name: 'Tags',
+        component: () => import('@/views/tags/index'),
+        meta: { title: '标签', icon: 'table' }
+      },
+      {
+        path: 'tree',
+        name: 'Tree',
+        component: () => import('@/components/ComplexTable'),
+        meta: { title: 'Tree', icon: 'tree' }
+      }
+    ]
+  },
 
   {
     path: '/',

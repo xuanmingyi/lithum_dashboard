@@ -6,10 +6,12 @@ import { getToken } from '@/utils/auth'
 // 创建axios实例
 const service = axios.create({
   baseURL: process.env.BASE_API, // api的base_url
-  timeout: 5000 // 请求超时时间
+  timeout: 50000 // 请求超时时间
 })
 
 // request拦截器
+
+/*
 service.interceptors.request.use(
   config => {
     if (store.getters.token) {
@@ -23,6 +25,7 @@ service.interceptors.request.use(
     Promise.reject(error)
   }
 )
+*/
 
 // respone拦截器
 service.interceptors.response.use(
