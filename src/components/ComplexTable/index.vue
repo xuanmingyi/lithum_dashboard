@@ -5,6 +5,8 @@
       <el-button type="primary" icon="el-icon-plus" @click="handleClick('new')">
         添加
       </el-button>
+      <el-button type="primary" icon="el-icon-menu">更多操作&nbsp&nbsp&nbsp&nbsp<i class="el-icon-caret-bottom" />
+      </el-button> 
       <el-button v-for="button in buttons"
         :class="button.icon"
         @click="handleClick(button.signal)"
