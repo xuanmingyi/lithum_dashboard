@@ -1,64 +1,70 @@
 <template>
   <div class="app-container">
-    <el-input v-model="filterText" placeholder="Filter keyword" style="margin-bottom:30px;" />
+    <complex-table
+      v-bind:buttons="buttons"
+      v-bind:search="search"
+      v-on:buttonClick="handleButtonClick"
+      v-on:selectionChange="handleSelectionChange">
 
-    <el-tree
-      ref="tree2"
-      :data="data2"
-      :props="defaultProps"
-      :filter-node-method="filterNode"
-      class="filter-tree"
-      default-expand-all
-    />
+      <el-dialog
+        :visible.sync="tag.visible"
+        title="创建标签"
+        width="50%">
 
+        <el-form ref="tag" :model="tag" status-icon label-width="100px">
+          <el-form-item label="名字">
+            <el-input v-model="tag.data.name" type="text" auto-complete="off" />
+          </el-form-item>
+          <el-form-item label="颜色">
+            <el-input v-model="tag.data.color" type="text" auto-complete="off" />
+            <el-color-picker v-model="tag.data.color" />
+          </el-form-item>
+        </el-form>
+
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="handleButtonClick('new-cancel')">取 消</el-button>
+          <el-button type="primary" @click="handleButtonClick('new-ok')">确 定</el-button>
+        </span>
+      </el-dialog>
+
+    </complex-table>
   </div>
 </template>
 
 <script>
-export default {
+import ComplexTable from '@/components/ComplexTable'
 
+export default {
+  components: {
+    ComplexTable
+  },
   data() {
     return {
-      filterText: '',
-      data2: [{
-        id: 1,
-        label: 'Level one 1',
-        children: [{
-          id: 4,
-          label: 'Level two 1-1',
-          children: [{
-            id: 9,
-            label: 'Level three 1-1-1'
-          }, {
-            id: 10,
-            label: 'Level three 1-1-2'
-          }]
-        }]
-      }, {
-        id: 2,
-        label: 'Level one 2',
-        children: [{
-          id: 5,
-          label: 'Level two 2-1'
-        }, {
-          id: 6,
-          label: 'Level two 2-2'
-        }]
-      }, {
-        id: 3,
-        label: 'Level one 3',
-        children: [{
-          id: 7,
-          label: 'Level two 3-1'
-        }, {
-          id: 8,
-          label: 'Level two 3-2'
-        }]
-      }],
-      defaultProps: {
-        children: 'children',
-        label: 'label'
-      }
+      buttons: [
+        {
+          icon: 'el-icon-menu',
+          name: 'update',
+          display: '修改',
+          signal: 'update'
+        },
+        {
+          icon: 'el-icon-menu',
+          name: 'delete',
+          display: '删除',
+          signal: 'delete'
+        }
+      ],
+      reload: false,
+      search: '',
+      tag: {
+        visible: false,
+        data: {
+          name: '默认标签',
+          color: '#345623',
+          id: ''
+        }
+      },
+      selections: []
     }
   },
   watch: {
@@ -71,6 +77,18 @@ export default {
     filterNode(value, data) {
       if (!value) return true
       return data.label.indexOf(value) !== -1
+    },
+    handleButtonClick(val) {
+      if(val == "new") {
+        this.tag.visible = true
+      }else if(val == 'new-cancel') {
+        this.tag.visible = false
+      }else if(val == 'new-ok') {
+        this.tag.visible = false
+      }
+    },
+    handleSelectionChange(val){
+      this.selections = val
     }
   }
 }

@@ -1,24 +1,23 @@
 <template>
   <div class="app-container">
-  <el-container>
-    <el-header>
-      asdfasdf
-    </el-header>
-    <el-main>
-    <div style="margin-bottom: 20px;">
-      <el-button :loading="refresh" icon="el-icon-refresh" type="primary" @click="loadTableData()" />
-      <el-button type="primary" icon="el-icon-plus" @click="handleNew">添加</el-button>
-
-      <el-button type="primary" icon="el-icon-menu" :disabled="single" @click="handleUpdate">修改</el-button>
-      <el-button type="primary" icon="el-icon-menu" :disabled="!multi" @click="handleDelete">删除</el-button>
-      <el-button type="primary" icon="el-icon-menu">更多操作&nbsp&nbsp&nbsp&nbsp<i class="el-icon-caret-bottom" /></el-button>
+    <div class="table-header">
+      <el-button :loading="reload" icon="el-icon-refresh" type="primary" @click="handleClick('reload')" />
+      <el-button type="primary" icon="el-icon-plus" @click="handleClick('new')">
+        添加
+      </el-button>
+      <el-button v-for="button in buttons"
+        :class="button.icon"
+        @click="handleClick(button.signal)"
+        type="primary">
+        {{ button.display }}
+      </el-button>
       <el-input
-        v-model="searchString"
+        v-model="search"
         style="width:20%;"
         placeholder="搜索"
         prefix-icon="el-icon-search" />
     </div>
-
+    
     <el-table
       :data="list"
       element-loading-text="Loading"
@@ -26,6 +25,7 @@
       fit
       highlight-current-row
       @selection-change="handleSelectionChange">
+
       <el-table-column type="selection" width="55" />
       <el-table-column label="ID" prop="id"></el-table-column>
       <el-table-column label="名称" align="center" prop="name">
@@ -45,28 +45,8 @@
       :total="1000">
     </el-pagination>
   </div>
-          <el-dialog
-        :visible.sync="tagDialogVisible"
-        title="创建标签"
-        width="50%">
 
-        <el-form ref="tagForm" :model="tagForm" status-icon label-width="100px">
-          <el-form-item label="名字">
-            <el-input v-model="tagForm.name" type="text" auto-complete="off" />
-          </el-form-item>
-          <el-form-item label="颜色">
-            <el-input v-model="tagForm.color" type="text" auto-complete="off" />
-            <el-color-picker v-model="tagForm.color" />
-          </el-form-item>
-        </el-form>
-
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="tagCancel">取 消</el-button>
-          <el-button type="primary" @click="tagSure">确 定</el-button>
-        </span>
-      </el-dialog>
-    </el-main>
-    </el-container>
+    <slot></slot>
   </div>
 </template>
 
@@ -75,18 +55,14 @@ import { getTagList, createTag, updateTag, deleteTag } from '@/api/table'
 
 export default {
   name: "ComplexTable",
+  props: [
+    'buttons',
+    'reload',
+    'search',
+    'selections'
+  ],
   data() {
     return {
-      refresh: false,
-      tagDialogVisible: false,
-      searchString: '',
-      tagForm: {
-        name: '',
-        color: '#345623',
-        id: ''
-      },
-      list: null,
-      multipleSelection: [],
       new: true
     }
   },
@@ -144,16 +120,19 @@ export default {
       deleteTag(this.multipleSelection).then(()=>{
         this.loadTableData()
       })
+    },
+    handleClick(signal){
+      this.$emit('buttonClick', signal)
+    },
+    handleSelectionChange(val){
+      this.$emit('selectionChange', val)
     }
   }
 }
 </script>
 
 <style>
-  .el-header, .el-footer {
-    background-color: #B3C0D1;
-    color: #333;
-    text-align: center;
-    line-height: 60px;
-  }
+.table-header {
+  margin-bottom: 15px;
+}
 </style>
